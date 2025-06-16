@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const LEFT = { x: -1, y: 0 };
     const RIGHT = { x: 1, y: 0 };
     const MIN_GROWTH = 1; // 最小增长长度
-    const MAX_GROWTH = 30; // 最大增长长度
+    const MAX_GROWTH = 10; // 最大增长长度
 
     // 颜色定义
     const COLORS = {
