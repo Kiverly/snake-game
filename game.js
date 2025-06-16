@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const LEFT = { x: -1, y: 0 };
     const RIGHT = { x: 1, y: 0 };
     const MIN_GROWTH = 1; // 最小增长长度
-    const MAX_GROWTH = 10; // 最大增长长度
+    const MAX_GROWTH = 30; // 最大增长长度
 
     // 颜色定义
     const COLORS = {
@@ -84,6 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn.addEventListener('click', startGame);
         pauseBtn.addEventListener('click', togglePause);
         restartBtn.addEventListener('click', resetGame);
+        // 难度按钮事件监听
+        document.getElementById('easyBtn').addEventListener('click', () => setDifficulty(DIFFICULTY.EASY));
+        document.getElementById('mediumBtn').addEventListener('click', () => setDifficulty(DIFFICULTY.MEDIUM));
+        document.getElementById('hardBtn').addEventListener('click', () => setDifficulty(DIFFICULTY.HARD));
 
         // 初始绘制菜单
         drawMenu();
@@ -157,15 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     startGame();
                 }
                 break;
-            case '1': // 1键选择简单难度
-                setDifficulty(DIFFICULTY.EASY);
-                break;
-            case '2': // 2键选择中等难度
-                setDifficulty(DIFFICULTY.MEDIUM);
-                break;
-            case '3': // 3键选择困难难度
-                setDifficulty(DIFFICULTY.HARD);
-                break;
+
         }
     }
 
@@ -232,8 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateScore();
             generateFood();
             // 添加额外的身体段（除了已经添加的头部）
+            // 添加额外的身体段到尾部（而不是头部）以避免自碰撞
             for (let i = 1; i < growthLength; i++) {
-                snake.unshift({...head});
+                const tail = snake[snake.length - 1];
+                snake.push({...tail});
             }
         } else {
             // 没吃到食物，移除尾部
