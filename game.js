@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText('按回车键或点击开始按钮开始游戏', WIDTH / 2, HEIGHT / 2);
         ctx.fillText('使用方向键或WASD控制蛇移动', WIDTH / 2, HEIGHT / 2 + 40);
         ctx.fillText('空格键暂停/继续游戏', WIDTH / 2, HEIGHT / 2 + 80);
-        ctx.fillText('按1, 2, 3键选择难度 (当前: ' + currentDifficulty.name + ')', WIDTH / 2, HEIGHT / 2 + 120);
+        ctx.fillText('按蓝色按钮选择难度 (当前: ' + currentDifficulty.name + ')', WIDTH / 2, HEIGHT / 2 + 120);
         ctx.fillText('吃到食物将随机增长' + MIN_GROWTH + '-' + MAX_GROWTH + '个单位', WIDTH / 2, HEIGHT / 2 + 160);
     }
 
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = '24px SimHei';
         ctx.fillText(`最终得分: ${score}`, WIDTH / 2, HEIGHT / 2);
         ctx.fillText('按回车键或点击重新开始按钮', WIDTH / 2, HEIGHT / 2 + 40);
-        ctx.fillText('按1, 2, 3键选择难度', WIDTH / 2, HEIGHT / 2 + 80);
+        ctx.fillText('按蓝色按钮选择难度', WIDTH / 2, HEIGHT / 2 + 80);
     }
 
     // 绘制暂停界面
