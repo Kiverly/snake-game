@@ -3,11 +3,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const CELL_SIZE = 20;
     const WIDTH = 800;
     const HEIGHT = 600;
-    const FPS = 10;
+    // 游戏难度设置
+    const DIFFICULTY = {
+        EASY: { name: "小试牛刀", fps: 10 },
+        MEDIUM: { name: "初露锋芒", fps: 20 },
+        HARD: { name: "登峰造极", fps: 40 }
+    };
+    let currentDifficulty = DIFFICULTY.EASY; // 默认难度为小试牛刀
     const UP = { x: 0, y: -1 };
     const DOWN = { x: 0, y: 1 };
     const LEFT = { x: -1, y: 0 };
     const RIGHT = { x: 1, y: 0 };
+    const MIN_GROWTH = 1; // 最小增长长度
+    const MAX_GROWTH = 30; // 最大增长长度
 
     // 颜色定义
     const COLORS = {
@@ -44,12 +52,32 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let gameLoopId = null;
     let lastFrameTime = 0;
+    let difficultyElement = null;
 
     // 初始化游戏
+    // 设置游戏难度
+    function setDifficulty(difficulty) {
+        currentDifficulty = difficulty;
+        updateDifficultyDisplay();
+    }
+
+    // 更新难度显示
+    function updateDifficultyDisplay() {
+        if (difficultyElement) {
+            difficultyElement.textContent = `难度: ${currentDifficulty.name}`;
+        }
+    }
+
     function init() {
         // 设置画布大小
         canvas.width = WIDTH;
         canvas.height = HEIGHT;
+
+        // 创建难度显示元素
+        difficultyElement = document.createElement('div');
+        difficultyElement.className = 'difficulty';
+        document.querySelector('.game-container').appendChild(difficultyElement);
+        updateDifficultyDisplay();
 
         // 添加事件监听器
         document.addEventListener('keydown', handleKeyPress);
@@ -76,11 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // 重置蛇的位置和方向
         snake = [
             { x: 5, y: 5 },
-            { x: 5, y: 6 },
-            { x: 5, y: 7 }
+            { x: 4, y: 5 },
+            { x: 3, y: 5 }
         ];
-        direction = UP;
-        nextDirection = UP;
+        direction = RIGHT;
+        nextDirection = RIGHT;
         score = 0;
         updateScore();
         generateFood();
@@ -128,6 +156,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentState === GameState.MENU || currentState === GameState.GAME_OVER) {
                     startGame();
                 }
+                break;
+            case '1': // 1键选择简单难度
+                setDifficulty(DIFFICULTY.EASY);
+                break;
+            case '2': // 2键选择中等难度
+                setDifficulty(DIFFICULTY.MEDIUM);
+                break;
+            case '3': // 3键选择困难难度
+                setDifficulty(DIFFICULTY.HARD);
                 break;
         }
     }
@@ -189,9 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 检查是否吃到食物
         if (head.x === food.x && head.y === food.y) {
-            score += 10;
+            // 随机生成增长长度
+            const growthLength = Math.floor(Math.random() * (MAX_GROWTH - MIN_GROWTH + 1)) + MIN_GROWTH;
+            score += 10 * growthLength;
             updateScore();
             generateFood();
+            // 添加额外的身体段（除了已经添加的头部）
+            for (let i = 1; i < growthLength; i++) {
+                snake.unshift({...head});
+            }
         } else {
             // 没吃到食物，移除尾部
             snake.pop();
@@ -244,6 +287,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText('按回车键或点击开始按钮开始游戏', WIDTH / 2, HEIGHT / 2);
         ctx.fillText('使用方向键或WASD控制蛇移动', WIDTH / 2, HEIGHT / 2 + 40);
         ctx.fillText('空格键暂停/继续游戏', WIDTH / 2, HEIGHT / 2 + 80);
+        ctx.fillText('按1, 2, 3键选择难度 (当前: ' + currentDifficulty.name + ')', WIDTH / 2, HEIGHT / 2 + 120);
+        ctx.fillText('吃到食物将随机增长' + MIN_GROWTH + '-' + MAX_GROWTH + '个单位', WIDTH / 2, HEIGHT / 2 + 160);
     }
 
     // 绘制游戏结束界面
@@ -260,6 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = '24px SimHei';
         ctx.fillText(`最终得分: ${score}`, WIDTH / 2, HEIGHT / 2);
         ctx.fillText('按回车键或点击重新开始按钮', WIDTH / 2, HEIGHT / 2 + 40);
+        ctx.fillText('按1, 2, 3键选择难度', WIDTH / 2, HEIGHT / 2 + 80);
     }
 
     // 绘制暂停界面
@@ -312,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 控制帧率
         if (!timestamp) timestamp = 0;
         const elapsed = timestamp - lastFrameTime;
-        const interval = 1000 / FPS;
+        const interval = 1000 / currentDifficulty.fps;
 
         if (elapsed > interval) {
             lastFrameTime = timestamp - (elapsed % interval);
